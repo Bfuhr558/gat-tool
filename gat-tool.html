@@ -1,0 +1,431 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+#app { font-family: var(--font-sans); max-width: 680px; padding: 1.5rem 0; }
+.screen { display: none; }
+.screen.active { display: block; }
+.brand-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.brand-logo { display: flex; flex-direction: column; }
+.brand-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); letter-spacing: 0.04em; }
+.brand-sub { font-size: 11px; color: var(--color-text-secondary); letter-spacing: 0.06em; text-transform: uppercase; }
+.brand-gat { font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: var(--border-radius-md); background: var(--color-background-success); color: var(--color-text-success); }
+.lang-bar { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+.lang-btn { padding: 5px 14px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; cursor: pointer; font-size: 13px; color: var(--color-text-secondary); transition: all 0.15s; }
+.lang-btn.active { background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-border-info); }
+.hero-title { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.75rem; line-height: 1.3; }
+.hero-sub { font-size: 15px; color: var(--color-text-secondary); line-height: 1.7; margin-bottom: 2rem; }
+.role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 2rem; }
+.role-card { padding: 1.25rem; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); background: var(--color-background-primary); cursor: pointer; transition: all 0.15s; }
+.role-card:hover { border-color: var(--color-border-secondary); background: var(--color-background-secondary); }
+.role-card.selected { border: 1.5px solid var(--color-border-info); background: var(--color-background-info); }
+.role-card .role-label { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.role-card .role-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; }
+.role-card.selected .role-label { color: var(--color-text-info); }
+.role-card.selected .role-desc { color: var(--color-text-info); }
+.start-btn { width: 100%; padding: 12px; background: transparent; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); font-size: 15px; color: var(--color-text-primary); cursor: pointer; transition: all 0.15s; }
+.start-btn:hover:not(:disabled) { background: var(--color-background-secondary); }
+.start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.about-box { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 2rem; border-left: 3px solid var(--color-border-success); }
+.about-box p { font-size: 13px; color: var(--color-text-secondary); line-height: 1.7; }
+.about-box p + p { margin-top: 0.5rem; }
+.progress-bar { height: 2px; background: var(--color-background-secondary); border-radius: 2px; margin-bottom: 2rem; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--color-text-info); border-radius: 2px; transition: width 0.4s ease; }
+.q-label { font-size: 12px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
+.q-text { font-size: 17px; font-weight: 500; color: var(--color-text-primary); line-height: 1.5; margin-bottom: 0.5rem; }
+.q-context { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 1.5rem; font-style: italic; }
+.options-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; }
+.option-btn { padding: 12px 16px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); background: var(--color-background-primary); cursor: pointer; font-size: 14px; color: var(--color-text-primary); text-align: left; transition: all 0.15s; line-height: 1.5; }
+.option-btn:hover { border-color: var(--color-border-secondary); background: var(--color-background-secondary); }
+.option-btn.selected { border: 1.5px solid var(--color-border-info); background: var(--color-background-info); color: var(--color-text-info); }
+.open-input { width: 100%; padding: 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); background: var(--color-background-primary); font-size: 14px; color: var(--color-text-primary); resize: vertical; min-height: 100px; font-family: var(--font-sans); line-height: 1.6; }
+.open-input:focus { outline: none; border-color: var(--color-border-secondary); }
+.nav-row { display: flex; gap: 12px; margin-top: 1rem; }
+.nav-btn { flex: 1; padding: 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; font-size: 14px; color: var(--color-text-primary); cursor: pointer; transition: all 0.15s; }
+.nav-btn:hover { background: var(--color-background-secondary); }
+.nav-btn.primary { background: var(--color-background-secondary); font-weight: 500; }
+.loading-screen { text-align: center; padding: 3rem 0; }
+.loading-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--color-text-secondary); margin: 0 3px; animation: pulse 1.2s ease-in-out infinite; }
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse { 0%,80%,100%{opacity:0.3;transform:scale(0.8)}40%{opacity:1;transform:scale(1)} }
+.result-header { margin-bottom: 1.5rem; }
+.portrait-box { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1.5rem; border-left: 3px solid var(--color-border-warning); }
+.portrait-box p { font-size: 14px; color: var(--color-text-primary); line-height: 1.7; }
+.section-title { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 1rem; }
+.action-item { display: flex; gap: 12px; padding: 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); margin-bottom: 8px; background: var(--color-background-primary); }
+.action-priority { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: var(--border-radius-md); white-space: nowrap; align-self: flex-start; }
+.action-priority.urgent { background: var(--color-background-danger); color: var(--color-text-danger); }
+.action-priority.important { background: var(--color-background-warning); color: var(--color-text-warning); }
+.action-priority.ongoing { background: var(--color-background-success); color: var(--color-text-success); }
+.action-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; }
+.resource-link { display: block; padding: 10px 14px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); margin-bottom: 6px; text-decoration: none; background: var(--color-background-primary); transition: all 0.15s; }
+.resource-link:hover { background: var(--color-background-secondary); border-color: var(--color-border-secondary); }
+.resource-title { font-size: 13px; font-weight: 500; color: var(--color-text-info); margin-bottom: 2px; }
+.resource-desc { font-size: 12px; color: var(--color-text-secondary); }
+.restart-btn { width: 100%; padding: 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; font-size: 14px; color: var(--color-text-secondary); cursor: pointer; margin-top: 1rem; }
+.restart-btn:hover { background: var(--color-background-secondary); }
+.footer-note { margin-top: 2rem; padding-top: 1rem; border-top: 0.5px solid var(--color-border-tertiary); font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; text-align: center; }
+.footer-note a { color: var(--color-text-info); text-decoration: none; }
+</style>
+
+<div id="app">
+  <div class="brand-header">
+    <div class="brand-logo">
+      <span class="brand-name">Blossom — WeCare</span>
+      <span class="brand-sub">Gender-sensitive Assessment Tool</span>
+    </div>
+    <span class="brand-gat">GAT</span>
+  </div>
+
+  <div class="lang-bar">
+    <button class="lang-btn active" onclick="setLang('en')">English</button>
+    <button class="lang-btn" onclick="setLang('da')">Dansk</button>
+  </div>
+
+  <div id="screen-start" class="screen active">
+    <div class="hero-title" id="start-title">Is your service working for women?</div>
+    <div class="hero-sub" id="start-sub">This tool helps organizations working with people experiencing homelessness understand whether their services meet the needs of women — including during menstruation and menopause. It takes about 10 minutes and ends with a tailored portrait of your service and concrete next steps.</div>
+    <div class="about-box" id="about-box">
+      <p id="about-p1">GAT is part of Blossom's WeCare program. WeCare supports homeless service organizations in Denmark and the Nordic countries to provide dignified, gender-sensitive care — starting with the most basic and often overlooked needs.</p>
+      <p id="about-p2">Your responses are not stored or shared. This tool is for your own reflection and development.</p>
+    </div>
+    <div class="role-grid">
+      <div class="role-card" id="card-frontline" onclick="selectRole('frontline')">
+        <div class="role-label" id="role-frontline-label">Frontline staff</div>
+        <div class="role-desc" id="role-frontline-desc">You work directly with people using the service — in the kitchen, at the door, in the shelter.</div>
+      </div>
+      <div class="role-card" id="card-manager" onclick="selectRole('manager')">
+        <div class="role-label" id="role-manager-label">Manager / coordinator</div>
+        <div class="role-desc" id="role-manager-desc">You are responsible for operations, policy, or service design.</div>
+      </div>
+    </div>
+    <button class="start-btn" id="start-btn" onclick="startInterview()" disabled>Begin ↗</button>
+  </div>
+
+  <div id="screen-questions" class="screen">
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="q-label" id="q-label"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="q-context" id="q-context"></div>
+    <div id="q-input-area"></div>
+    <div class="nav-row">
+      <button class="nav-btn" onclick="prevQ()" id="back-btn">← Back</button>
+      <button class="nav-btn primary" onclick="nextQ()" id="next-btn">Next →</button>
+    </div>
+  </div>
+
+  <div id="screen-loading" class="screen">
+    <div class="loading-screen">
+      <div style="margin-bottom:1rem"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
+      <div style="font-size:14px;color:var(--color-text-secondary)" id="loading-text">Analyzing your responses...</div>
+    </div>
+  </div>
+
+  <div id="screen-result" class="screen">
+    <div class="result-header">
+      <div class="hero-title" id="result-title">Your service portrait</div>
+      <div class="hero-sub" id="result-sub">Based on your responses, here is an honest picture of how your service is currently working — and where to focus next.</div>
+    </div>
+    <div class="portrait-box"><p id="portrait-text"></p></div>
+    <div style="margin-bottom:1.5rem">
+      <div class="section-title" id="actions-title">Prioritized actions</div>
+      <div id="actions-list"></div>
+    </div>
+    <div style="margin-bottom:1.5rem">
+      <div class="section-title" id="resources-title">Resources to go deeper</div>
+      <div id="resources-list"></div>
+    </div>
+    <div class="footer-note" id="footer-note">
+      GAT is part of <a href="https://handrea906.wixsite.com/wecare-gat" target="_blank">Blossom's WeCare program</a>. To learn about workshops, Blossom Bags, and partnerships, visit WeCare.
+    </div>
+    <button class="restart-btn" onclick="restart()" id="restart-btn">Start again</button>
+  </div>
+</div>
+
+<script>
+let lang='en',role=null,currentQ=0,answers={};
+
+const T={
+  en:{
+    startTitle:'Is your service working for women?',
+    startSub:'This tool helps organizations working with people experiencing homelessness understand whether their services meet the needs of women — including during menstruation and menopause. It takes about 10 minutes and ends with a tailored portrait of your service and concrete next steps.',
+    aboutP1:"GAT is part of Blossom's WeCare program. WeCare supports homeless service organizations in Denmark and the Nordic countries to provide dignified, gender-sensitive care — starting with the most basic and often overlooked needs.",
+    aboutP2:'Your responses are not stored or shared. This tool is for your own reflection and development.',
+    frontlineLabel:'Frontline staff',frontlineDesc:'You work directly with people using the service — in the kitchen, at the door, in the shelter.',
+    managerLabel:'Manager / coordinator',managerDesc:'You are responsible for operations, policy, or service design.',
+    startBtn:'Begin ↗',loading:'Analyzing your responses...',
+    resultTitle:'Your service portrait',resultSub:'Based on your responses, here is an honest picture of how your service is currently working — and where to focus next.',
+    actionsTitle:'Prioritized actions',resourcesTitle:'Resources to go deeper',restartBtn:'Start again',
+    back:'← Back',next:'Next →',finish:'See results ↗',
+    questionOf:(c,t)=>`Question ${c} of ${t}`,
+    urgentLabel:'Do this week',importantLabel:'This month',ongoingLabel:'Ongoing',
+    footerNote:'GAT is part of <a href="https://handrea906.wixsite.com/wecare-gat" target="_blank">Blossom\'s WeCare program</a>. To learn about workshops, Blossom Bags, and partnerships, visit WeCare.'
+  },
+  da:{
+    startTitle:'Fungerer jeres tilbud for kvinder?',
+    startSub:'Dette værktøj hjælper organisationer, der arbejder med hjemløse, med at forstå om deres tilbud reelt møder kvinders behov — herunder under menstruation og overgangsalder. Det tager ca. 10 minutter og afsluttes med et skræddersyet billede af jeres tilbud og konkrete næste skridt.',
+    aboutP1:'GAT er en del af Blossoms WeCare-program. WeCare støtter hjemløseorganisationer i Danmark og Norden i at tilbyde værdig, kønssensitiv omsorg — startende med de mest basale og ofte oversete behov.',
+    aboutP2:'Dine svar gemmes eller deles ikke. Dette værktøj er til din egen refleksion og udvikling.',
+    frontlineLabel:'Medarbejder i frontlinjen',frontlineDesc:'Du arbejder direkte med brugerne — i køkkenet, ved indgangen, på herberget.',
+    managerLabel:'Leder / koordinator',managerDesc:'Du er ansvarlig for drift, politik eller tilbudsdesign.',
+    startBtn:'Kom i gang ↗',loading:'Analyserer dine svar...',
+    resultTitle:'Jeres tilbudsportræt',resultSub:'Baseret på dine svar er her et ærligt billede af, hvordan jeres tilbud fungerer i dag — og hvor I bør fokusere.',
+    actionsTitle:'Prioriterede handlinger',resourcesTitle:'Ressourcer til at gå dybere',restartBtn:'Start forfra',
+    back:'← Tilbage',next:'Næste →',finish:'Se resultater ↗',
+    questionOf:(c,t)=>`Spørgsmål ${c} af ${t}`,
+    urgentLabel:'Gør denne uge',importantLabel:'Denne måned',ongoingLabel:'Løbende',
+    footerNote:'GAT er en del af <a href="https://handrea906.wixsite.com/wecare-gat" target="_blank">Blossoms WeCare-program</a>. Læs om workshops, Blossom Bags og partnerskaber på WeCare.'
+  }
+};
+
+const questions={
+  frontline:{
+    en:[
+      {section:'Who shows up',text:'Roughly what proportion of the people you see at your service are women?',context:'Think about a typical week.',type:'options',options:['Less than 10%','Around 10–20%','Around 20–40%','More than 40%',"I don't know / we don't track this"]},
+      {section:'Physical space',text:"It's 7am on a Tuesday. A woman has a heavy period and needs to change a pad before she leaves. Walk us through exactly what she would do in your service.",context:'Think about where she would go, what she would need, who she might have to ask.',type:'open',key:'scenario_period'},
+      {section:'Physical space',text:'Where are sanitary products (pads, tampons) kept in your facility?',context:'',type:'options',options:['Visible and freely accessible to users','Available but you need to ask a staff member','In storage — not actively offered',"We don't have them","I don't know"]},
+      {section:'Physical space',text:'Is there a private, clean space where a woman could rest lying down for an hour if she needed to?',context:'Not a toilet cubicle. An actual place to lie down with some privacy.',type:'options',options:['Yes, specifically for this purpose',"Informally — we'd improvise something",'No',"I'm not sure"]},
+      {section:'Safety',text:"A woman tells you a male regular has made comments that made her feel uncomfortable. What happens next?",context:'Think about what you would actually do — not what the policy says.',type:'open',key:'scenario_safety'},
+      {section:'Safety',text:'How would you describe the atmosphere in your service for women?',context:'',type:'options',options:['Welcoming and safe','Mostly okay but some tension','Women seem uncomfortable — they stay briefly and leave',"It's a predominantly male space and that's noticeable","I haven't really thought about it"]},
+      {section:'Knowledge',text:"A woman tells you she's been experiencing extreme hot flashes, mood swings, poor sleep, and feels like something is wrong with her mind. How do you respond?",context:'There is no right or wrong answer. We want to understand what knowledge and resources you have available.',type:'open',key:'scenario_menopause'},
+      {section:'Knowledge',text:'Do you have any training or information about the specific reasons women become homeless?',context:'For example: gender-based violence, economic dependency, hidden homelessness.',type:'options',options:['Yes, this has been part of my training','Informally — I\'ve picked things up','No formal training on this',"I hadn't thought about homelessness as being gendered"]},
+      {section:'Service design',text:'Think about the activities and services your organization offers. Who do you think they were designed for?',context:'',type:'options',options:['Clearly designed with both men and women in mind','Mostly neutral but some things clearly suit men more','Predominantly designed for men',"I don't know who designed them or how"]},
+      {section:'Service design',text:'Have women who use (or have used) your service ever been consulted about what they need?',context:'',type:'options',options:['Yes, regularly and systematically','Occasionally, informally','Not that I know of',"There aren't enough women using the service to ask"]},
+    ],
+    da:[
+      {section:'Hvem bruger tilbuddet',text:'Omtrent hvor stor en andel af de personer, du møder i dit tilbud, er kvinder?',context:'Tænk på en typisk uge.',type:'options',options:['Mindre end 10%','Omkring 10–20%','Omkring 20–40%','Mere end 40%','Ved ikke / vi registrerer det ikke']},
+      {section:'Fysiske rammer',text:'Det er tirsdag morgen kl. 7. En kvinde har kraftig menstruation og skal skifte bind, inden hun forlader stedet. Beskriv præcist, hvad hun ville gøre i jeres tilbud.',context:'Tænk over, hvor hun ville gå hen, hvad hun ville have brug for, og om hun skal bede nogen om hjælp.',type:'open',key:'scenario_period'},
+      {section:'Fysiske rammer',text:'Hvor opbevares hygiejneprodukter (bind, tamponer) i jeres tilbud?',context:'',type:'options',options:['Synlige og frit tilgængelige for brugerne','Tilgængelige, men man skal bede en medarbejder','På lager — ikke aktivt tilbudt','Vi har dem ikke','Ved ikke']},
+      {section:'Fysiske rammer',text:'Er der et privat, rent sted, hvor en kvinde kan lægge sig ned og hvile i en time, hvis hun har brug for det?',context:'Ikke en toiletbås. Et egentligt sted at ligge ned med lidt privatliv.',type:'options',options:['Ja, specifikt til dette formål','Uformelt — vi ville improvisere noget','Nej','Er ikke sikker']},
+      {section:'Sikkerhed',text:'En kvinde fortæller dig, at en mandlig fast bruger har sagt noget, der fik hende til at føle sig utryg. Hvad sker der så?',context:'Tænk på, hvad du faktisk ville gøre — ikke hvad politikken siger.',type:'open',key:'scenario_safety'},
+      {section:'Sikkerhed',text:'Hvordan vil du beskrive stemningen i jeres tilbud for kvinder?',context:'',type:'options',options:['Imødekommende og trygt','Mest okay, men lidt spænding','Kvinder virker utrygge — de er kort tid og går hurtigt','Det er primært et mandsdomineret rum, og det mærkes','Har ikke rigtig tænkt over det']},
+      {section:'Viden',text:'En kvinde fortæller dig, at hun i lang tid har haft kraftige hedeture, humørsvingninger, dårlig søvn og føler, at noget er galt med hendes hoved. Hvordan reagerer du?',context:'Der er ikke et rigtigt eller forkert svar. Vi vil forstå, hvilken viden og hvilke ressourcer du har til rådighed.',type:'open',key:'scenario_menopause'},
+      {section:'Viden',text:'Har du modtaget nogen form for undervisning eller information om de specifikke årsager til, at kvinder bliver hjemløse?',context:'F.eks. kønsbaseret vold, økonomisk afhængighed, skjult hjemløshed.',type:'options',options:['Ja, det har indgået i min uddannelse/oplæring','Uformelt — jeg har samlet viden op undervejs','Ingen formel uddannelse om dette','Jeg havde ikke tænkt på hjemløshed som kønnet']},
+      {section:'Tilbudsdesign',text:'Tænk på de aktiviteter og tilbud, din organisation tilbyder. Hvem tror du, de er designet til?',context:'',type:'options',options:['Tydeligt designet med både mænd og kvinder i tankerne','Mest neutralt, men noget passer klart bedre til mænd','Overvejende designet til mænd','Ved ikke, hvem der har designet dem eller hvordan']},
+      {section:'Tilbudsdesign',text:'Er kvinder, der bruger (eller har brugt) jeres tilbud, nogensinde blevet spurgt om, hvad de har brug for?',context:'',type:'options',options:['Ja, regelmæssigt og systematisk','Lejlighedsvis, uformelt','Ikke at jeg ved af','Der er ikke nok kvinder til at spørge']},
+    ]
+  },
+  manager:{
+    en:[
+      {section:'Data and visibility',text:'Do you track the gender breakdown of your service users?',context:'',type:'options',options:['Yes, systematically and regularly reviewed','Yes, but we rarely analyze it',"No, we don't collect this data","We collect it but I don't have access to it"]},
+      {section:'Data and visibility',text:'How does the proportion of women using your service compare to the estimated proportion of women experiencing homelessness in your area?',context:'In most Nordic cities, women represent 25–35% of people experiencing homelessness, but often fewer than 15% of shelter and soup kitchen users.',type:'options',options:['We serve a representative proportion of women','We serve fewer women than expected — and I know why','We serve fewer women than expected — and I\'m not sure why',"We've never analyzed this gap"]},
+      {section:'Infrastructure',text:'A woman arrives at your service with a heavy period and lower back pain. She needs to rest privately for an hour. What can she actually do?',context:'Walk through the physical reality of your space.',type:'open',key:'scenario_period_mgr'},
+      {section:'Infrastructure',text:'How are sanitary products managed in your facility?',context:'',type:'options',options:['Freely available without asking, in accessible locations','Available on request from staff','In storage — given if specifically requested','Not currently provided','Provided by a third party / external partner']},
+      {section:'Safety policy',text:'Your non-violence or dignity policy — what does it explicitly cover regarding sexually unwelcoming comments or behavior?',context:'',type:'options',options:['It explicitly covers verbal/sexual harassment and has a clear response protocol','It covers physical violence but is vague on verbal/sexual behavior',"It's a general policy that doesn't specify this","We don't have a formal policy"]},
+      {section:'Safety policy',text:'When a woman reports feeling unsafe due to another user\'s behavior, what is the formal process?',context:'Think about who she reports to, whether that person is male or female, and what happens next.',type:'open',key:'scenario_reporting'},
+      {section:'Staff knowledge',text:'Are your staff equipped to recognize and respond to someone who may be experiencing perimenopause?',context:'Symptoms include severe hot flashes, mood changes, disrupted sleep, confusion, and anxiety — often misread as mental health crises or substance abuse.',type:'options',options:['Yes, this is part of our staff training','Some staff may know from personal experience','No — this has not been addressed','I had not considered this']},
+      {section:'Staff knowledge',text:'Do staff have training on gender-based violence as a pathway into homelessness?',context:'GBV is the leading cause of homelessness for women in the EU. Many women experiencing homelessness are fleeing or have fled violence.',type:'options',options:['Yes, this is covered in onboarding and ongoing training','It has come up informally','No formal training on this','This connection is not well understood in our organization']},
+      {section:'Service design',text:'Who was consulted when your service — its activities, its space, its hours — was designed?',context:'',type:'options',options:['People with lived experience of homelessness, including women','Primarily staff and management','External consultants or funders',"I don't know the history of how the service was designed"]},
+      {section:'Service design',text:'Are your opening hours compatible with the specific situations of women experiencing homelessness?',context:'For example: women in mixed shelters often need to leave very early. Heavy periods may mean needing to arrive or stay later.',type:'options',options:['Yes, we have considered this specifically','Probably not — we haven\'t analyzed this','Our hours are fixed by funding/regulation and hard to change',"I hadn't thought about hours as a gendered issue"]},
+      {section:'Strategic intent',text:'What would need to change in your organization for women to feel this service was designed for them?',context:'This is an open question. There are no right answers.',type:'open',key:'strategic_change'},
+    ],
+    da:[
+      {section:'Data og synlighed',text:'Registrerer I kønsfordelingen af jeres brugere?',context:'',type:'options',options:['Ja, systematisk og med regelmæssig analyse','Ja, men vi analyserer det sjældent','Nej, vi indsamler ikke disse data','Vi indsamler det, men jeg har ikke adgang til det']},
+      {section:'Data og synlighed',text:'Hvordan stemmer andelen af kvinder i jeres tilbud overens med den estimerede andel af hjemløse kvinder i jeres område?',context:'I de fleste nordiske byer udgør kvinder 25–35% af hjemløse, men ofte kun under 15% af brugerne på herberger og varmestuer.',type:'options',options:['Vi betjener en repræsentativ andel af kvinder','Vi betjener færre kvinder end forventet — og jeg ved hvorfor','Vi betjener færre kvinder end forventet — og er ikke sikker på hvorfor','Vi har aldrig analyseret dette']},
+      {section:'Infrastruktur',text:'En kvinde ankommer til jeres tilbud med kraftig menstruation og smerter i lænden. Hun har brug for at hvile privat i en time. Hvad kan hun konkret gøre?',context:'Gå igennem den fysiske virkelighed i jeres rum.',type:'open',key:'scenario_period_mgr'},
+      {section:'Infrastruktur',text:'Hvordan håndteres hygiejneprodukter i jeres tilbud?',context:'',type:'options',options:['Frit tilgængelige uden at spørge, på synlige steder','Tilgængelige på anmodning til personale','På lager — udleveres kun hvis man specifikt beder om det','Vi tilbyder dem ikke','Leveres af en tredjepart / ekstern partner']},
+      {section:'Sikkerhedspolitik',text:'Jeres ikke-volds- eller værdigheds politik — hvad dækker den eksplicit om seksuelt ubehagelige kommentarer eller adfærd?',context:'',type:'options',options:['Den dækker eksplicit verbal/seksuel chikane og har en klar protokol','Den dækker fysisk vold men er uklar om verbal/seksuel adfærd','Det er en generel politik uden specificering','Vi har ikke en formel politik']},
+      {section:'Sikkerhedspolitik',text:'Når en kvinde melder, at hun føler sig utryg pga. en anden brugers adfærd — hvad er den formelle procedure?',context:'Tænk over, hvem hun melder det til, om den person er mand eller kvinde, og hvad der sker derefter.',type:'open',key:'scenario_reporting'},
+      {section:'Medarbejderviden',text:'Er jeres medarbejdere rustet til at genkende og reagere på nogen, der måske er i overgangsalderen?',context:'Symptomer inkluderer kraftige hedeture, humørsvingninger, søvnforstyrrelser, forvirring og angst — ofte fejllæst som psykisk krise eller misbrug.',type:'options',options:['Ja, dette er en del af vores oplæring','Noget personale ved det måske fra personlig erfaring','Nej — dette er ikke adresseret','Jeg havde ikke overvejet dette']},
+      {section:'Medarbejderviden',text:'Har medarbejdere fået undervisning i kønsbaseret vold som vej til hjemløshed?',context:'Kønsbaseret vold er den hyppigste årsag til hjemløshed for kvinder i EU. Mange hjemløse kvinder er flygtet eller er ved at flygte fra vold.',type:'options',options:['Ja, det indgår i introduktion og løbende undervisning','Det er kommet op uformelt','Ingen formel uddannelse om dette','Denne sammenhæng er ikke bredt forstået i vores organisation']},
+      {section:'Tilbudsdesign',text:'Hvem blev involveret, da jeres tilbud — dets aktiviteter, rum, åbningstider — blev designet?',context:'',type:'options',options:['Personer med egenerfaring som hjemløse, inkl. kvinder','Primært medarbejdere og ledelse','Eksterne konsulenter eller finansieringskilder','Jeg kender ikke historikken for, hvordan tilbuddet blev designet']},
+      {section:'Tilbudsdesign',text:'Er jeres åbningstider forenelige med kvinders specifikke situationer som hjemløse?',context:'F.eks.: kvinder på blandede herberger skal ofte forlade stedet meget tidligt. Kraftig menstruation kan betyde behov for at ankomme eller blive længere.',type:'options',options:['Ja, vi har specifikt overvejet dette','Sandsynligvis ikke — vi har ikke analyseret det','Vores åbningstider er fastsat af finansiering/regulering og svære at ændre','Jeg havde ikke tænkt på åbningstider som et kønsmæssigt spørgsmål']},
+      {section:'Strategisk intention',text:'Hvad skulle ændre sig i jeres organisation for, at kvinder ville opleve dette tilbud som designet til dem?',context:'Dette er et åbent spørgsmål. Der er ingen rigtige svar.',type:'open',key:'strategic_change'},
+    ]
+  }
+};
+
+const resources={
+  en:[
+    {title:'FEANTSA: Women and Homelessness in Europe',url:'https://www.feantsa.org/en/toolkit/2017/04/05/toolkit-on-women-and-homelessness',desc:'Comprehensive research on gendered homelessness, including GBV as a primary cause.'},
+    {title:'ETHOS Light: European Typology of Homelessness',url:'https://www.feantsa.org/en/toolkit/2005/04/01/ethos-typology-on-homelessness-and-housing-exclusion',desc:'Understanding hidden homelessness — the categories women most often fall into.'},
+    {title:'Homeless Link: Women and Homelessness',url:'https://homeless.org.uk/knowledge-hub/homelessness-and-women/',desc:'Practical guidance on designing services that actually work for women.'},
+    {title:'LOKK: National Organisation of Women\'s Shelters in Denmark',url:'https://lokk.dk',desc:'Danish resource on gender-based violence and its relationship to housing instability.'},
+    {title:'NHS: Menopause overview (plain language)',url:'https://www.nhs.uk/conditions/menopause/',desc:'Clear, non-clinical explanation of perimenopause and menopause for non-medical staff.'},
+    {title:'Trauma-informed practice in homelessness services',url:'https://www.homelesshub.ca/solutions/shelter-design/trauma-informed-care',desc:'How to create services that do not re-traumatize women fleeing violence.'},
+    {title:'Plan International: Menstrual health in humanitarian settings',url:'https://plan-international.org/publications/menstrual-hygiene-humanitarian-settings/',desc:'Guidance on dignified menstrual support in resource-constrained settings.'},
+  ],
+  da:[
+    {title:'FEANTSA: Kvinder og hjemløshed i Europa',url:'https://www.feantsa.org/en/toolkit/2017/04/05/toolkit-on-women-and-homelessness',desc:'Omfattende forskning om kønnet hjemløshed i Europa, inkl. kønsbaseret vold som primær årsag.'},
+    {title:'LOKK: Landsorganisation af Kvindekrisecentre',url:'https://lokk.dk',desc:'Dansk ressource om kønsbaseret vold og sammenhæng med boligustabilitet.'},
+    {title:'Hjem til Alle: Hjemløshed i Danmark',url:'https://hjemtilalle.dk',desc:'Alliancen der arbejder for at afskaffe hjemløshed i Danmark — inkl. kønsperspektiv.'},
+    {title:'Sundhedsstyrelsen: Overgangsalderen',url:'https://www.sst.dk/da/viden/reproduktiv-sundhed/overgangsalderen',desc:'Klar, ikke-klinisk forklaring af overgangsalderens symptomer til brug i sociale tilbud.'},
+    {title:'Homeless Link: Kvinder og hjemløshed',url:'https://homeless.org.uk/knowledge-hub/homelessness-and-women/',desc:'Praktisk vejledning om at designe tilbud, der reelt fungerer for kvinder.'},
+    {title:'Traumeinformeret praksis i hjemløshedstilbud',url:'https://www.homelesshub.ca/solutions/shelter-design/trauma-informed-care',desc:'Hvordan man skaber tilbud, der ikke gentraumatiserer kvinder, der flygter fra vold.'},
+    {title:'Plan International: Menstruationssundhed i humanitære kontekster',url:'https://plan-international.org/publications/menstrual-hygiene-humanitarian-settings/',desc:'Vejledning om menstruationsstøtte med værdighed i ressourcebegrænsede sammenhænge.'},
+  ]
+};
+
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${l}')"]`).classList.add('active');
+  updateStartScreen();
+}
+
+function updateStartScreen(){
+  const t=T[lang];
+  document.getElementById('start-title').textContent=t.startTitle;
+  document.getElementById('start-sub').textContent=t.startSub;
+  document.getElementById('about-p1').textContent=t.aboutP1;
+  document.getElementById('about-p2').textContent=t.aboutP2;
+  document.getElementById('role-frontline-label').textContent=t.frontlineLabel;
+  document.getElementById('role-frontline-desc').textContent=t.frontlineDesc;
+  document.getElementById('role-manager-label').textContent=t.managerLabel;
+  document.getElementById('role-manager-desc').textContent=t.managerDesc;
+  document.getElementById('start-btn').textContent=t.startBtn;
+}
+
+function selectRole(r){
+  role=r;
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('card-'+r).classList.add('selected');
+  document.getElementById('start-btn').disabled=false;
+}
+
+function getQs(){return questions[role][lang];}
+
+function startInterview(){
+  currentQ=0;answers={};
+  showScreen('screen-questions');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const qs=getQs(),q=qs[currentQ],t=T[lang],total=qs.length;
+  document.getElementById('progress-fill').style.width=((currentQ/total)*100)+'%';
+  document.getElementById('q-label').textContent=t.questionOf(currentQ+1,total)+' — '+q.section;
+  document.getElementById('q-text').textContent=q.text;
+  document.getElementById('q-context').textContent=q.context;
+  document.getElementById('next-btn').textContent=currentQ===total-1?t.finish:t.next;
+  document.getElementById('back-btn').textContent=t.back;
+  document.getElementById('back-btn').style.display=currentQ===0?'none':'block';
+  const area=document.getElementById('q-input-area');
+  area.innerHTML='';
+  if(q.type==='options'){
+    const saved=answers[currentQ];
+    const list=document.createElement('div');
+    list.className='options-list';
+    q.options.forEach((opt,i)=>{
+      const btn=document.createElement('button');
+      btn.className='option-btn'+(saved===i?' selected':'');
+      btn.textContent=opt;
+      btn.onclick=()=>{answers[currentQ]=i;document.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');};
+      list.appendChild(btn);
+    });
+    area.appendChild(list);
+  } else {
+    const ta=document.createElement('textarea');
+    ta.className='open-input';
+    ta.placeholder=lang==='en'?'Describe what would actually happen...':'Beskriv hvad der faktisk ville ske...';
+    ta.value=answers[currentQ]||'';
+    ta.oninput=()=>{answers[currentQ]=ta.value;};
+    area.appendChild(ta);
+  }
+}
+
+function nextQ(){
+  const qs=getQs();
+  if(currentQ<qs.length-1){currentQ++;renderQuestion();}
+  else{generateResults();}
+}
+
+function prevQ(){if(currentQ>0){currentQ--;renderQuestion();}}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+async function generateResults(){
+  showScreen('screen-loading');
+  document.getElementById('loading-text').textContent=T[lang].loading;
+  const qs=getQs();
+  const summaryParts=qs.map((q,i)=>{
+    const ans=answers[i];
+    let ansText=q.type==='options'&&ans!==undefined?q.options[ans]:(ans||'[not answered]');
+    return `Q: ${q.text}\nA: ${ansText}`;
+  }).join('\n\n');
+
+  const roleLabel=role==='frontline'?(lang==='en'?'frontline staff member':'medarbejder i frontlinjen'):(lang==='en'?'manager/coordinator':'leder/koordinator');
+
+  const systemPrompt=lang==='en'
+    ?`You are analyzing self-assessment responses from a ${roleLabel} at a homeless service organization in Denmark or a Nordic country, using Blossom's WeCare GAT (Gender-sensitive Assessment Tool). The organization likely has Christian charity roots and a culture of silence around menstruation and menopause.
+
+Write a service portrait and prioritized action list based on their answers.
+
+PORTRAIT: 3–5 sentences honestly describing the woman their service is currently designed for. Be specific. Name what is missing. Start with "Based on your responses, your service currently works best for a woman who..."
+
+ACTIONS: 6–8 concrete prioritized actions. Each must have: priority ("urgent", "important", or "ongoing") and text (one clear actionable sentence). Urgent = do this week. Important = this month. Ongoing = structural change. Focus on: menstrual product access and dignity, menopause awareness, GBV as a cause of homelessness, physical safety, gender data collection, participatory service design.
+
+Respond ONLY with valid JSON, no preamble, no markdown:
+{"portrait":"...","actions":[{"priority":"urgent","text":"..."}]}`
+    :`Du analyserer selvevalueringssvar fra en ${roleLabel} hos en hjemløseorganisation i Danmark eller Norden, ved brug af Blossoms WeCare GAT (Kønssensitivt Vurderingsværktøj). Organisationen har sandsynligvis kristelige rødder og en kultur med tavshed om menstruation og overgangsalderen.
+
+Skriv et tilbudsportræt og en prioriteret handlingsliste baseret på svarene.
+
+PORTRÆT: 3–5 sætninger der ærligt beskriver den kvinde, tilbuddet i dag er designet til. Vær specifik. Navngiv hvad der mangler. Start med "Baseret på dine svar fungerer jeres tilbud bedst for en kvinde, der..."
+
+HANDLINGER: 6–8 konkrete prioriterede handlinger. Hver skal have: priority ("urgent", "important" eller "ongoing") og text (én klar handlingsorienteret sætning). Urgent = gør denne uge. Important = denne måned. Ongoing = strukturel ændring. Fokuser på: adgang til hygiejneprodukter med værdighed, bevidsthed om overgangsalderen, kønsbaseret vold som årsag til hjemløshed, fysisk sikkerhed, kønsdata, deltagelsesbaseret tilbudsdesign.
+
+Svar KUN med valid JSON, ingen indledning, intet markdown:
+{"portrait":"...","actions":[{"priority":"urgent","text":"..."}]}`;
+
+  try{
+    const response=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:systemPrompt,messages:[{role:'user',content:summaryParts}]})
+    });
+    const data=await response.json();
+    const raw=data.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(raw);
+    renderResults(parsed);
+  } catch(e){
+    showScreen('screen-result');
+    document.getElementById('portrait-text').textContent=lang==='en'?'Unable to generate analysis. Please check your connection and try again.':'Kunne ikke generere analyse. Tjek din forbindelse og prøv igen.';
+    document.getElementById('actions-list').innerHTML='<p style="color:var(--color-text-danger);font-size:13px">'+e.message+'</p>';
+  }
+}
+
+function renderResults(data){
+  const t=T[lang];
+  document.getElementById('result-title').textContent=t.resultTitle;
+  document.getElementById('result-sub').textContent=t.resultSub;
+  document.getElementById('actions-title').textContent=t.actionsTitle;
+  document.getElementById('resources-title').textContent=t.resourcesTitle;
+  document.getElementById('restart-btn').textContent=t.restartBtn;
+  document.getElementById('portrait-text').textContent=data.portrait;
+  document.getElementById('footer-note').innerHTML=t.footerNote;
+  const al=document.getElementById('actions-list');
+  al.innerHTML='';
+  (data.actions||[]).forEach(a=>{
+    const item=document.createElement('div');
+    item.className='action-item';
+    const pl=a.priority==='urgent'?t.urgentLabel:a.priority==='important'?t.importantLabel:t.ongoingLabel;
+    item.innerHTML=`<span class="action-priority ${a.priority}">${pl}</span><span class="action-text">${a.text}</span>`;
+    al.appendChild(item);
+  });
+  const rl=document.getElementById('resources-list');
+  rl.innerHTML='';
+  resources[lang].forEach(r=>{
+    const link=document.createElement('a');
+    link.className='resource-link';
+    link.href=r.url;
+    link.target='_blank';
+    link.innerHTML=`<div class="resource-title">${r.title}</div><div class="resource-desc">${r.desc}</div>`;
+    rl.appendChild(link);
+  });
+  showScreen('screen-result');
+}
+
+function restart(){
+  role=null;currentQ=0;answers={};
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('start-btn').disabled=true;
+  updateStartScreen();
+  showScreen('screen-start');
+}
+
+updateStartScreen();
+</script>
